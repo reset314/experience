@@ -1,4 +1,4 @@
-package com.example.experience.utils;
+package com.example.experience.common.utils;
 
 import java.util.UUID;
 
