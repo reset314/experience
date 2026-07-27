@@ -27,6 +27,8 @@
 | 决策 | 选择 | 说明 |
 |---|---|---|
 | 主键生成 | UUID7 | 全表统一使用 UUID7，不采用自增 ID |
+| ID 分配职责 | 应用/服务层 | UUID7 由服务层调用 `Uuid7Utils.generateUuid7()` 生成并赋值，不依赖 `@PrePersist` |
+| 实体构造 | 工厂/Builder | 必填字段少时用静态工厂 `create(...)`，可选字段多时用 Lombok `@Builder`；禁止 public 无参构造 |
 | 权限模型 | RBAC | roles + permissions + role_permissions + user_roles |
 | 用户表拆分 | users + user_profiles | 认证与实名/偏好信息分离 |
 | 媒体存储 | 独立 media_files 表 | events.payload 通过 `media_file_ids` 引用 |
@@ -47,8 +49,8 @@
 | `id` | UUID7 | PRIMARY KEY | 用户唯一标识 |
 | `username` | VARCHAR(64) | UNIQUE NOT NULL | 登录用户名 |
 | `password_hash` | VARCHAR(255) | NOT NULL | 密码哈希（bcrypt/scrypt） |
-| `email` | VARCHAR(255) | NULLABLE | 邮箱 |
-| `phone` | VARCHAR(32) | NULLABLE | 手机号 |
+| `email` | VARCHAR(255) | UNIQUE NULLABLE | 邮箱 |
+| `phone` | VARCHAR(32) | UNIQUE NULLABLE | 手机号 |
 | `status` | VARCHAR(16) | NOT NULL DEFAULT 'active' | active / suspended / deleted |
 | `created_at` | TIMESTAMP | NOT NULL DEFAULT NOW() | 注册时间 |
 | `updated_at` | TIMESTAMP | NOT NULL DEFAULT NOW() | 更新时间 |
@@ -62,10 +64,11 @@
 | `user_id` | UUID7 | FK → users(id), UNIQUE NOT NULL | 一对一 |
 | `display_name` | VARCHAR(128) | NULLABLE | 显示名称 |
 | `real_name` | VARCHAR(64) | NULLABLE | 真实姓名（认证） |
-| `id_card_hash` | VARCHAR(255) | NULLABLE | 身份证号哈希（查重） |
+| `id_card_hash` | VARCHAR(255) | UNIQUE NULLABLE | 身份证号哈希（查重） |
 | `id_card_encrypted` | TEXT | NULLABLE | 身份证号加密存储（AES-256-GCM） |
 | `id_verified_at` | TIMESTAMP | NULLABLE | 实名认证通过时间 |
 | `settings` | JSONB | NULLABLE | 用户偏好设置 |
+| `avatar_data` | TEXT | NULLABLE | 头像图片 base64（服务层统一裁剪为 256×256 PNG） |
 | `created_at` | TIMESTAMP | NOT NULL DEFAULT NOW() | |
 | `updated_at` | TIMESTAMP | NOT NULL DEFAULT NOW() | |
 
@@ -336,6 +339,39 @@ UNIQUE:
 | `user_agent` | TEXT | NULLABLE | |
 | `details` | JSONB | NULLABLE | 变更前后快照 |
 | `created_at` | TIMESTAMP | DEFAULT NOW() | |
+
+---
+
+### 3.10 实体构造与 ID 分配约定
+
+为保持领域对象的完整性与单一职责，所有 `domain` 层实体统一遵循以下约定：
+
+#### 1. 无参构造器仅用于 JPA
+
+- 所有实体必须保留一个 `protected` 无参构造器，仅供 JPA/Hibernate 反射和代理使用。
+- 禁止在业务代码中直接调用 `new Entity()` 后再通过 setter 链式补全字段。
+
+#### 2. 对象创建入口
+
+| 实体特点 | 推荐构造方式 | 示例 |
+|---|---|---|
+| 必填字段少、结构稳定 | 静态工厂 `create(...)` | `User.create(id, username, passwordHash)` |
+| 可选字段多、参数组合复杂 | Lombok `@Builder` | `UserProfile.builder().id(id).user(user).displayName(...).build()` |
+
+- 工厂/Builder 必须要求调用方传入 `id`。
+- 复杂 JSONB 字段（如 `metadata`、`payload`、`settings`）通过 Builder 设置。
+
+#### 3. UUID7 由服务层分配
+
+- `Uuid7Utils.generateUuid7()` 保留在 `common.util`。
+- **应用服务/领域服务负责在调用 `repository.save()` 之前生成 UUID 并 `setId()`。**
+- **实体中不使用 `@PrePersist` 生成 ID。**
+- 若服务层遗漏赋值导致保存时 `id` 为 `null`，应直接让持久化层或业务校验报错，强制所有创建路径经过服务层。
+
+#### 4. Setter 策略
+
+- 允许保留 Lombok `@Getter`。
+- Setter 按需保留，但应尽量避免 public setter 暴露内部状态；状态变更优先通过领域方法表达（如 `user.deactivate()`、`event.markAsDeleted()`）。
 
 ---
 
