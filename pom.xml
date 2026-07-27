@@ -79,6 +79,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+			<version>8.5.11</version>
+		</dependency>
+		<dependency>
 			<groupId>com.fasterxml.uuid</groupId>
 			<artifactId>java-uuid-generator</artifactId>
 			<version>5.1.0</version>
