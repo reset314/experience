@@ -408,12 +408,33 @@ com.example.experience
 │       └── repository
 ├── application
 │   ├── user
+│   │   ├── service
+│   │   │   └── impl
+│   │   └── dto
 │   ├── rbac
+│   │   ├── service
+│   │   │   └── impl
+│   │   └── dto
 │   ├── event
+│   │   ├── service
+│   │   │   └── impl
+│   │   └── dto
 │   ├── entity
+│   │   ├── service
+│   │   │   └── impl
+│   │   └── dto
 │   ├── datasource
+│   │   ├── service
+│   │   │   └── impl
+│   │   └── dto
 │   ├── sync
+│   │   ├── service
+│   │   │   └── impl
+│   │   └── dto
 │   └── platform
+│       ├── service
+│       │   └── impl
+│       └── dto
 ├── infrastructure
 │   ├── persistence
 │   ├── storage
@@ -426,7 +447,7 @@ com.example.experience
 
 说明：
 - `domain`：实体 + 仓库接口，无业务逻辑
-- `application`：Service / DTO / 用例编排
+- `application`：Service 接口 + `impl` 实现类 / DTO / 用例编排；对外暴露接口，实现类以 `Impl` 后缀区分
 - `infrastructure`：技术实现（MinIO、加密、数据库配置）
 - `interfaces`：REST 入口、全局异常、拦截器
 

@@ -1,4 +1,4 @@
-package com.example.experience.domain.user.entity;
+package com.example.experience.domain.rbac.entity;
 
 import java.time.Instant;
 
@@ -17,31 +17,27 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "users")
 @Getter
 @Setter
+@Table(name = "roles")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class User {
-
+public class Role {
     @Id
     @Column(name = "id", length = 32, nullable = false, updatable = false)
     private String id;
 
-    @Column(name = "username", length = 64, nullable = false, unique = true)
-    private String username;
+    @Column(name = "name", length = 64, nullable = false, unique = true)
+    private String name;
 
-    @Column(name = "password_hash", length = 255, nullable = false)
-    private String passwordHash;
+    @Column(name = "display_name", length = 128, nullable = false)
+    private String displayName;
 
-    @Column(name = "email", length = 255, nullable = true, unique = true)
-    private String email;
+    @Column(name = "description", columnDefinition = "TEXT", nullable = true)
+    private String description;
 
-    @Column(name = "phone", length = 32, nullable = true, unique = true)
-    private String phone;
-
-    @Column(name = "status", length = 16, nullable = false)
-    private String status = "active";
+    @Column(name = "is_system", nullable = false)
+    private Boolean isSystem = false;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -51,14 +47,13 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    @Column(name = "last_login_at")
-    private Instant lastLoginAt;
-
-    public static User create(String id, String username, String passwordHash) {
-        User user = new User();
-        user.id = id;
-        user.username = username;
-        user.passwordHash = passwordHash;
-        return user;
+    public static Role create(String id, String name, String displayName, String description, Boolean isSystem) {
+        Role role = new Role();
+        role.id = id;
+        role.name = name;
+        role.displayName = displayName;
+        role.description = description;
+        role.isSystem = isSystem;
+        return role;
     }
 }

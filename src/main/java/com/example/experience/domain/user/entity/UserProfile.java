@@ -39,25 +39,25 @@ public class UserProfile {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(name = "display_name", length = 128, nullable = false)
+    @Column(name = "display_name", length = 128, nullable = true)
     private String displayName;
 
-    @Column(name = "real_name", length = 64, nullable = false)
+    @Column(name = "real_name", length = 64, nullable = true)
     private String realName;
 
-    @Column(name = "id_card_hash", length = 255, nullable = false, unique = true)
+    @Column(name = "id_card_hash", length = 255, nullable = true, unique = true)
     private String idCardHash;
 
-    @Column(name = "id_card_encrypted", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "id_card_encrypted", columnDefinition = "TEXT", nullable = true)
     private String idCardEncrypted;
 
-    @Column(name = "id_verified_at", length = 255, nullable = false)
+    @Column(name = "id_verified_at", nullable = true)
     private Instant idVerifiedAt;
 
-    @Column(name = "settings", columnDefinition = "JSONB", nullable = false)
+    @Column(name = "settings", columnDefinition = "JSONB", nullable = true)
     private String settings;
 
-    @Column(name = "avatar_data", columnDefinition = "TEXT", nullable = false)
+    @Column(name = "avatar_data", columnDefinition = "TEXT", nullable = true)
     private String avatarData;
 
     @CreatedDate
