@@ -54,10 +54,11 @@ public class User {
     @Column(name = "last_login_at")
     private Instant lastLoginAt;
 
-    public static User create(String id, String username, String passwordHash) {
+    public static User create(String id, String username, String email, String passwordHash) {
         User user = new User();
         user.id = id;
         user.username = username;
+        user.email = email;
         user.passwordHash = passwordHash;
         return user;
     }

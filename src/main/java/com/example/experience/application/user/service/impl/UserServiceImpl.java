@@ -29,9 +29,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse createUser(String username, String rawPassword, String roleName) {
+    public UserResponse createUser(String username, String email, String rawPassword, String roleName) {
         String userId = Uuid7Utils.generateUuid7();
-        User user = User.create(userId, username, passwordEncoder.encode(rawPassword));
+        User user = User.create(userId, username, email, passwordEncoder.encode(rawPassword));
         User saved = userRepository.save(user);
 
         String profileId = Uuid7Utils.generateUuid7();

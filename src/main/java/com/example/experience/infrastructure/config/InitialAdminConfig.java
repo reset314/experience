@@ -25,6 +25,7 @@ public class InitialAdminConfig {
     private final UserService userService;
 
     private String username;
+    private String email;
     private String password;
 
     @EventListener(ApplicationReadyEvent.class)
@@ -34,7 +35,7 @@ public class InitialAdminConfig {
             return;
         }
         if (userRepository.findByUsername(username).isEmpty()) {
-            userService.createUser(username, password, "superadmin");
+            userService.createUser(username, email, password, "superadmin");
             log.info("Created initial superadmin user: {}", username);
         }
     }
