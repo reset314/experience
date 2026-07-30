@@ -2,15 +2,20 @@ package com.example.experience.application.event.dto;
 
 import java.time.Instant;
 
-public record CreateEventRequest(
+public record EventDetailResponse(
+    String id,
+    String createdBy,
+    String userId,
+    String operatorId,
+    String targetId,
     String deviceMac,
     String platform,
     String eventType,
     Instant occurredAt,
     String payload,
-    String description,
     String sourceType,
-    String operatorId,
-    String targetId
+    String description,
+    Instant createdAt
 ) {
 }
+

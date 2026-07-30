@@ -12,8 +12,8 @@ public record EventResponse(
     String platform,
     String eventType,
     Instant occurredAt,
-    String payload,
     String sourceType,
+    String description,
     Instant createdAt
 ) {
 }

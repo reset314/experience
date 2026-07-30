@@ -41,6 +41,9 @@ public class EventServiceImpl implements EventService {
             .occurredAt(request.occurredAt())
             .payload(request.payload());
 
+        if (request.description() != null) {
+            builder.description(request.description());
+        }
         if (request.sourceType() != null) {
             builder.sourceType(request.sourceType());
         }
@@ -87,8 +90,8 @@ public class EventServiceImpl implements EventService {
             event.getPlatform(),
             event.getEventType(),
             event.getOccurredAt(),
-            event.getPayload(),
             event.getSourceType(),
+            event.getDescription(),
             event.getCreatedAt()
         );
     }

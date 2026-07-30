@@ -68,6 +68,9 @@ public class Event {
     @Column(name = "payload", columnDefinition = "JSONB", nullable = false)
     private String payload;
 
+    @Column(name = "description", length = 512, nullable = true)
+    private String description;
+
     @Column(name = "source_type", length = 16, nullable = false)
     @Builder.Default
     private String sourceType = "auto_sync";
