@@ -9,6 +9,12 @@ import com.example.experience.domain.media.entity.MediaFile;
 
 public interface MediaFileRepository extends JpaRepository<MediaFile, String> {
     List<MediaFile> findByUserId(String userId);
+
     List<MediaFile> findByDataSourceId(String dataSourceId);
+
     Optional<MediaFile> findByChecksumSha256(String checksumSha256);
+
+    List<MediaFile> findByCreatedBy(String createdBy);
+
+    Optional<MediaFile> findByIdAndCreatedBy(String id, String createdBy);
 }

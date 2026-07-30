@@ -2,6 +2,7 @@ package com.example.experience.domain.event.entity;
 
 import java.time.Instant;
 
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -35,6 +36,10 @@ public class Event {
     @Id
     @Column(length = 32, nullable = false, updatable = false)
     private String id;
+
+    @CreatedBy
+    @Column(name = "created_by", length = 64, nullable = false)
+    private String createdBy;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

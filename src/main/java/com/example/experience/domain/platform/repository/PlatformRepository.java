@@ -9,5 +9,8 @@ import com.example.experience.domain.platform.entity.Platform;
 
 public interface PlatformRepository extends JpaRepository<Platform, String> {
     Optional<Platform> findByNameAndCreatedBy(String name, String createdBy);
+
     List<Platform> findByCreatedBy(String createdBy);
+
+    Optional<Platform> findByIdAndCreatedBy(String id, String createdBy);
 }

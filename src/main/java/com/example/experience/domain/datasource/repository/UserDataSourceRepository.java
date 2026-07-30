@@ -9,5 +9,10 @@ import com.example.experience.domain.datasource.entity.UserDataSource;
 
 public interface UserDataSourceRepository extends JpaRepository<UserDataSource, String> {
     Optional<UserDataSource> findByUserIdAndPlatformNameAndSourceIdentifier(String userId, String platformName, String sourceIdentifier);
+
     List<UserDataSource> findByUserId(String userId);
+
+    List<UserDataSource> findByCreatedBy(String createdBy);
+
+    Optional<UserDataSource> findByIdAndCreatedBy(String id, String createdBy);
 }
