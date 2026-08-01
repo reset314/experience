@@ -1,9 +1,9 @@
-package com.example.experience.application.event.dto;
+package com.example.experience.application.platform.dto;
 
 import java.util.List;
 
-public record EventListResponse(
-    List<EventDetailResponse> events,
+public record PlatformListResponse(
+    List<PlatformResponse> platforms,
 
     long total,
     int totalPages,
@@ -14,4 +14,5 @@ public record EventListResponse(
     boolean last,
     boolean empty
 ) {
+
 }

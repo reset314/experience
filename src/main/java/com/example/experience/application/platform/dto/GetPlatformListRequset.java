@@ -1,4 +1,4 @@
-package com.example.experience.application.event.dto;
+package com.example.experience.application.platform.dto;
 
 import java.time.Instant;
 
@@ -7,10 +7,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
-public record GetEventListRequest(
-    String userId,
-    String eventType,
-    String platform,
+public record GetPlatformListRequset(
+    String UserId,
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant occurredAfter,
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant occurredBefore,
     String q,
@@ -20,4 +18,5 @@ public record GetEventListRequest(
     String sortBy,
     String sortDirection
 ) {
+
 }

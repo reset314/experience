@@ -68,6 +68,9 @@ public class Platform {
     @Column(name = "metadata", columnDefinition = "JSONB", nullable = true)
     private String metadata;
 
+    @Column(name = "config", columnDefinition = "JSON", nullable = true)
+    private String config;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
