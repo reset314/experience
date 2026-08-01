@@ -3,10 +3,12 @@ package com.example.experience.infrastructure.storage;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
 import com.example.experience.common.config.MinioProperties;
 import com.example.experience.common.exception.StorageException;
+import com.example.experience.common.utils.MimeTypeUtils;
 
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
@@ -17,12 +19,10 @@ import io.minio.ObjectWriteResponse;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.StatObjectArgs;
-import io.minio.http.Method;
 import io.minio.errors.ErrorResponseException;
-import org.apache.commons.io.IOUtils;
+import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.example.experience.common.utils.MimeTypeUtils;
 
 @Slf4j
 @Service
