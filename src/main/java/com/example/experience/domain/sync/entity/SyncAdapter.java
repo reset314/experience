@@ -60,6 +60,16 @@ public class SyncAdapter {
     @Column(name = "version", length = 16, nullable = true)
     private String version;
 
+    @Column(name = "adapter_type", length = 16, nullable = false)
+    @Builder.Default
+    private String adapterType = "uploaded";
+
+    @Column(name = "source_path", length = 512, nullable = true)
+    private String sourcePath;
+
+    @Column(name = "compiled_path", length = 512, nullable = true)
+    private String compiledPath;
+
     @Column(name = "metadata", columnDefinition = "JSONB", nullable = true)
     private String metadata;
 
