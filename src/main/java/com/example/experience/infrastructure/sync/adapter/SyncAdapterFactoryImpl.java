@@ -16,16 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 public class SyncAdapterFactoryImpl implements SyncAdapterFactory {
 
     @Override
-    public Object httpClient() {
-        throw new UnsupportedOperationException("httpClient not implemented yet");
-    }
-
-    @Override
-    public Object jsonMapper() {
-        throw new UnsupportedOperationException("jsonMapper not implemented yet");
-    }
-
-    @Override
     public String getCredential(UserDataSource dataSource, String key) {
         throw new UnsupportedOperationException("getCredential not implemented yet");
     }
