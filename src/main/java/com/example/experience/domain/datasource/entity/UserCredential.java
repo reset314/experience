@@ -48,11 +48,8 @@ public class UserCredential {
     @Column(name = "credential_type", length = 32, nullable = false)
     private String credentialType;
 
-    @Column(name = "encrypted_credential", columnDefinition = "TEXT", nullable = false)
-    private String encryptedCredential;
-
-    @Column(name = "encrypted_extra", columnDefinition = "TEXT", nullable = true)
-    private String encryptedExtra;
+    @Column(name = "credential", columnDefinition = "JSONB", nullable = false)
+    private String credential;
 
     @Column(name = "status", length = 32, nullable = false)
     private String status = "active";
@@ -75,13 +72,13 @@ public class UserCredential {
     private Instant updatedAt;
 
     public static UserCredential create(String id, User user, UserDataSource dataSource,
-                                        String credentialType, String encryptedCredential) {
-        UserCredential credential = new UserCredential();
-        credential.id = id;
-        credential.user = user;
-        credential.dataSource = dataSource;
-        credential.credentialType = credentialType;
-        credential.encryptedCredential = encryptedCredential;
-        return credential;
+                                        String credentialType, String credential) {
+        UserCredential userCredential = new UserCredential();
+        userCredential.id = id;
+        userCredential.user = user;
+        userCredential.dataSource = dataSource;
+        userCredential.credentialType = credentialType;
+        userCredential.credential = credential;
+        return userCredential;
     }
 }
