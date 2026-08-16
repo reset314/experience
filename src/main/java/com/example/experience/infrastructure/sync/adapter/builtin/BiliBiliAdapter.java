@@ -4,11 +4,15 @@ import java.net.URI;
 import java.time.Instant;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.example.experience.common.exception.SyncAPIAuthException;
+import com.example.experience.common.exception.SyncAPIClientException;
+import com.example.experience.common.exception.SyncAPIServiceException;
 import com.example.experience.infrastructure.sync.adapter.FetchContext;
 import com.example.experience.infrastructure.sync.adapter.SyncAdapterHandler;
 import com.example.experience.infrastructure.sync.adapter.SyncResult;
@@ -20,7 +24,17 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class BiliBiliAdapter implements SyncAdapterHandler {
 
-    private final RestClient biliClient = RestClient.create();
+    private final RestClient biliClient = RestClient.builder()
+        .defaultStatusHandler(HttpStatusCode::is5xxServerError, (req, res) -> {
+            throw new SyncAPIServiceException("BiliBili API Service Error: " + res.getStatusCode());
+        })
+        .defaultStatusHandler(status -> status.value() == 401 || status.value() == 403, (req, res) -> {
+            throw new SyncAPIAuthException("BiliBili API Auth Error: " + res.getStatusCode());
+        })
+        .defaultStatusHandler(HttpStatusCode::is4xxClientError, (req, res) -> {
+            throw new SyncAPIClientException("BiliBili API Client Error: " + res.getStatusCode());
+        })
+        .build();
     
     @Override
     public SyncResult fetchEvents(FetchContext ctx) {
