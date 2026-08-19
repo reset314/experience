@@ -141,6 +141,7 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
         public static final String GETLOGINQRCODEURI = "/x/passport-login/web/qrcode/generate";
         public static final String GETLOGINRESULTURI = "/x/passport-login/web/qrcode/poll";
         public static final String GETIFCOOKIENEEDREFRESHURI = "/x/passport-login/web/cookie/info";
+        public static final String GETMYINFOURI = "/x/member/web/account";
         // public static final String 
     }
 
