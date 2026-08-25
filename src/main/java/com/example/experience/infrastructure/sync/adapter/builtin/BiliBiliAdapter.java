@@ -19,6 +19,8 @@ import com.example.experience.common.exception.SyncAPIServiceException;
 import com.example.experience.infrastructure.sync.adapter.FetchContext;
 import com.example.experience.infrastructure.sync.adapter.SyncAdapterHandler;
 import com.example.experience.infrastructure.sync.adapter.SyncResult;
+import com.example.experience.infrastructure.sync.adapter.auth.EmptyAuthInitRequest;
+import com.example.experience.infrastructure.sync.adapter.auth.AuthInitResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -51,11 +53,13 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
         return null;
     }
 
-    public SyncResult fetchUserProfile(FetchContext ctx) {
+    @Override
+    public BiliDTO.LoginPageUrlAndQrcodeKeyResponse initiateAuth(new EmptyAuthInitRequest()){
+        
         return null;
     }
 
-    public BiliDTO.LoginPageUrlAndQrcodeKeyResponse getLoginPageUrlAndQrcodeKey() {
+    private BiliDTO.LoginPageUrlAndQrcodeKeyResponse getLoginPageUrlAndQrcodeKey() {
         URI uri = UriComponentsBuilder.fromUriString(BiliHost.PASSPORT)
             .path(BiliUri.GETLOGINQRCODEURI)
             .build()
@@ -69,7 +73,7 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
         return new BiliDTO.LoginPageUrlAndQrcodeKeyResponse(responseUrl, responseQrcodeKey);
     }
 
-    public BiliDTO.LoginResultResponse getLoginResult(BiliDTO.LoginResultRequest request) {
+    private BiliDTO.LoginResultResponse getLoginResult(BiliDTO.LoginResultRequest request) {
         URI uri = UriComponentsBuilder.fromUriString(BiliHost.PASSPORT)
             .path(BiliUri.GETLOGINRESULTURI)
             .queryParam("qrcode_key", request.QrcodeKey)
@@ -125,7 +129,7 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
         }
 
         return new BiliDTO.LoginResultResponse(url, refreshToken, timestamp, credentialJson);
-    }
+    } 
 
     private Instant expiresFromMaxAge(long maxAge) {
         return maxAge < 0 ? null : Instant.now().plusSeconds(maxAge);
@@ -165,9 +169,11 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
     ) {}
 
     public static class BiliDTO {
-        public record LoginPageUrlAndQrcodeKeyResponse(String responseUrl, String responseQrcodeKey){};
+        public record LoginPageUrlAndQrcodeKeyResponse(String responseUrl, String responseQrcodeKey) implements AuthInitResponse{};
         public record LoginResultRequest(String QrcodeKey){};
         public record LoginResultResponse(String url, String refreshToken, Instant timestamp, String credentialJson){};
+        public record MyInfoGetRequest(){};
+        public record MyInfoGetResponse(int mid, String uname, String userId, String sign, Instant birthday, String sex, String rank){};
     }
 
 }
