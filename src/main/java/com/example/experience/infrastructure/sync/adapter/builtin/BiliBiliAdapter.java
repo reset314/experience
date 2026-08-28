@@ -19,7 +19,7 @@ import com.example.experience.common.exception.SyncAPIServiceException;
 import com.example.experience.infrastructure.sync.adapter.FetchContext;
 import com.example.experience.infrastructure.sync.adapter.SyncAdapterHandler;
 import com.example.experience.infrastructure.sync.adapter.SyncResult;
-import com.example.experience.infrastructure.sync.adapter.auth.EmptyAuthInitRequest;
+import com.example.experience.infrastructure.sync.adapter.auth.AuthInitRequest;
 import com.example.experience.infrastructure.sync.adapter.auth.AuthInitResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,7 +54,7 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
     }
 
     @Override
-    public BiliDTO.LoginPageUrlAndQrcodeKeyResponse initiateAuth(new EmptyAuthInitRequest()){
+    public BiliDTO.LoginPageUrlAndQrcodeKeyResponse initiateAuth(AuthInitRequest requset){
         
         return null;
     }
@@ -146,7 +146,7 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
         public static final String GETLOGINRESULTURI = "/x/passport-login/web/qrcode/poll";
         public static final String GETIFCOOKIENEEDREFRESHURI = "/x/passport-login/web/cookie/info";
         public static final String GETMYINFOURI = "/x/member/web/account";
-        // public static final String 
+        public static final String GETFAVLISTURI
     }
 
     private static final class BiliHost {
@@ -168,12 +168,31 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
         boolean httpOnly
     ) {}
 
-    public static class BiliDTO {
-        public record LoginPageUrlAndQrcodeKeyResponse(String responseUrl, String responseQrcodeKey) implements AuthInitResponse{};
-        public record LoginResultRequest(String QrcodeKey){};
-        public record LoginResultResponse(String url, String refreshToken, Instant timestamp, String credentialJson){};
-        public record MyInfoGetRequest(){};
-        public record MyInfoGetResponse(int mid, String uname, String userId, String sign, Instant birthday, String sex, String rank){};
+    public static record BiliVideo(
+        String url,
+        boolean isLike,
+        boolean isFav,
+        boolean isCoin,
+        BiliFavFolder favFolder,
+        
+    ){}
+
+    public static record BiliFavFolder(){}
+
+    public static record BiliUp(
+        String spaceUrl,
+        boolean isSubscribe
+    ){}
+
+    private static class BiliDTO {
+        public record LoginPageUrlAndQrcodeKeyResponse(String responseUrl, String responseQrcodeKey) implements AuthInitResponse{}
+        public record LoginResultRequest(String QrcodeKey){}
+        public record LoginResultResponse(String url, String refreshToken, Instant timestamp, String credentialJson){}
+        public record MyInfoGetRequest(){}
+        public record MyInfoGetResponse(int mid, String uname, String userId, String sign, Instant birthday, String sex, String rank){}
+        public record GetFavlistRequest(){}
+        public record GetFavlistResponse(){}
+        public record 
     }
 
 }
