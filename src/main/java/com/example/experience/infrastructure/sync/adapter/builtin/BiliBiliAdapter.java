@@ -146,7 +146,9 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
         public static final String GETLOGINRESULTURI = "/x/passport-login/web/qrcode/poll";
         public static final String GETIFCOOKIENEEDREFRESHURI = "/x/passport-login/web/cookie/info";
         public static final String GETMYINFOURI = "/x/member/web/account";
-        public static final String GETFAVLISTURI
+        public static final String GETFAVFOLDERINFOURI = "/x/v3/fav/folder/info";
+        public static final String GETUSERFAVFOLDERLISTURI = "/x/v3/fav/folder/created/list-all";
+        public static final String GETUSERFAVVEDIOFOLDERLISTURI = "/x/v3/fav/folder/collected/list";
     }
 
     private static final class BiliHost {

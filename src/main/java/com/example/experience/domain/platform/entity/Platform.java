@@ -62,7 +62,7 @@ public class Platform {
     @Builder.Default
     private String visibility = "private";
 
-    @Column(name = "icon", length = 255, nullable = true)
+    @Column(name = "icon", length = 255, nullable = true) 
     private String icon;
 
     @Column(name = "metadata", columnDefinition = "JSONB", nullable = true)

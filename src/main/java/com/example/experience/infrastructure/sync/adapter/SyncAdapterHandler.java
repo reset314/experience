@@ -15,6 +15,11 @@ public interface SyncAdapterHandler {
     SyncResult fetchEvents(FetchContext ctx);
 
     /**
+     * 上传一个事件
+     */
+    SyncResult uploadEvent(FetchContext ctx);
+
+    /**
      * 初始化认证流程，例如获取二维码 URL、OAuth 授权链接等。
      */
     default AuthInitResponse initiateAuth(AuthInitRequest request) {
