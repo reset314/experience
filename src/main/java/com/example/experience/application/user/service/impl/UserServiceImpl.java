@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.experience.application.user.dto.UserProfileResponse;
 import com.example.experience.application.user.dto.UserResponse;
 import com.example.experience.application.user.service.UserService;
 import com.example.experience.common.utils.Uuid7Utils;
@@ -48,5 +49,21 @@ public class UserServiceImpl implements UserService {
         });
 
         return new UserResponse(saved.getId(), saved.getUsername(), roleName);
+    }
+
+    @Override 
+    public UserProfileResponse getUserProfile(String userId) {
+
+        UserProfile profile = userProfileRepository.findByUserId(userId)
+            .orElseThrow(() -> new IllegalArgumentException("User profile not found"));
+
+        boolean isIdVerified = profile.getIdVerifiedAt() != null;
+        
+        return new UserProfileResponse(
+            userId,
+            profile.getDisplayName(),
+            isIdVerified,
+            profile.getAvatarData()
+        );
     }
 }
