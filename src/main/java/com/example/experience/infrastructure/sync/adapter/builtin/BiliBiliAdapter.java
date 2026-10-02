@@ -179,7 +179,14 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
         
     ){}
 
-    public static record BiliFavFolder(){}
+    public static record BiliFavFolder(
+        String id,
+        String fid,
+        String creatbyId,
+        int attr,//收藏夹属性位表0位标识是否为私有0公开1私有,1位表示是否为默认0默认1其他
+        String title,
+        int mediaCount
+    ){}
 
     public static record BiliUp(
         String spaceUrl,
@@ -192,9 +199,8 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
         public record LoginResultResponse(String url, String refreshToken, Instant timestamp, String credentialJson){}
         public record MyInfoGetRequest(){}
         public record MyInfoGetResponse(int mid, String uname, String userId, String sign, Instant birthday, String sex, String rank){}
-        public record GetFavlistRequest(){}
-        public record GetFavlistResponse(){}
-        public record 
+        public record GetFavlistRequest(String userId){}
+        public record GetFavlistResponse(int count, List<BiliFavFolder> folders){}
     }
 
 }
