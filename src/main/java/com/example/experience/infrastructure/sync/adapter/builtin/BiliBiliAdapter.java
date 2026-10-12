@@ -185,10 +185,15 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
         String creatbyId,
         int attr,//收藏夹属性位表0位标识是否为私有0公开1私有,1位表示是否为默认0默认1其他
         String title,
-        int mediaCount
+        int mediaCount,
+        Instant ctime,
+        Instant mtime,
+        boolean fav_state,
+        boolean like_state
     ){}
 
     public static record BiliUp(
+        String id,
         String spaceUrl,
         boolean isSubscribe
     ){}
