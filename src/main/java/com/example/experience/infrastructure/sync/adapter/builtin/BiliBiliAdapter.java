@@ -31,16 +31,16 @@ import lombok.extern.slf4j.Slf4j;
 public class BiliBiliAdapter implements SyncAdapterHandler {
 
     private final RestClient biliClient = RestClient.builder()
-        .defaultStatusHandler(HttpStatusCode::is5xxServerError, (req, res) -> {
-            throw new SyncAPIServiceException("BiliBili API Service Error: " + res.getStatusCode());
-        })
-        .defaultStatusHandler(status -> status.value() == 401 || status.value() == 403, (req, res) -> {
-            throw new SyncAPIAuthException("BiliBili API Auth Error: " + res.getStatusCode());
-        })
-        .defaultStatusHandler(HttpStatusCode::is4xxClientError, (req, res) -> {
-            throw new SyncAPIClientException("BiliBili API Client Error: " + res.getStatusCode());
-        })
-        .build();
+            .defaultStatusHandler(HttpStatusCode::is5xxServerError, (req, res) -> {
+                throw new SyncAPIServiceException("BiliBili API Service Error: " + res.getStatusCode());
+            })
+            .defaultStatusHandler(status -> status.value() == 401 || status.value() == 403, (req, res) -> {
+                throw new SyncAPIAuthException("BiliBili API Auth Error: " + res.getStatusCode());
+            })
+            .defaultStatusHandler(HttpStatusCode::is4xxClientError, (req, res) -> {
+                throw new SyncAPIClientException("BiliBili API Client Error: " + res.getStatusCode());
+            })
+            .build();
 
     private final ObjectMapper objectMapper;
 
@@ -54,20 +54,20 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
     }
 
     @Override
-    public BiliDTO.LoginPageUrlAndQrcodeKeyResponse initiateAuth(AuthInitRequest requset){
-        
+    public BiliDTO.LoginPageUrlAndQrcodeKeyResponse initiateAuth(AuthInitRequest requset) {
+
         return null;
     }
 
     private BiliDTO.LoginPageUrlAndQrcodeKeyResponse getLoginPageUrlAndQrcodeKey() {
         URI uri = UriComponentsBuilder.fromUriString(BiliHost.PASSPORT)
-            .path(BiliUri.GETLOGINQRCODEURI)
-            .build()
-            .toUri();
+                .path(BiliUri.GETLOGINQRCODEURI)
+                .build()
+                .toUri();
         JsonNode response = biliClient.get()
-            .uri(uri)
-            .retrieve()
-            .body(JsonNode.class);
+                .uri(uri)
+                .retrieve()
+                .body(JsonNode.class);
         String responseUrl = response.get("data").get("url").asText();
         String responseQrcodeKey = response.get("data").get("qrcode_key").asText();
         return new BiliDTO.LoginPageUrlAndQrcodeKeyResponse(responseUrl, responseQrcodeKey);
@@ -75,14 +75,14 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
 
     private BiliDTO.LoginResultResponse getLoginResult(BiliDTO.LoginResultRequest request) {
         URI uri = UriComponentsBuilder.fromUriString(BiliHost.PASSPORT)
-            .path(BiliUri.GETLOGINRESULTURI)
-            .queryParam("qrcode_key", request.QrcodeKey)
-            .build()
-            .toUri();
+                .path(BiliUri.GETLOGINRESULTURI)
+                .queryParam("qrcode_key", request.QrcodeKey)
+                .build()
+                .toUri();
         ResponseEntity<JsonNode> response = biliClient.get()
-            .uri(uri)
-            .retrieve()
-            .toEntity(JsonNode.class);
+                .uri(uri)
+                .retrieve()
+                .toEntity(JsonNode.class);
         JsonNode body = response.getBody();
         int code = body.get("data").get("code").asInt();
         if (code != 0) {
@@ -91,17 +91,17 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
         HttpHeaders headers = response.getHeaders();
         List<String> setCookieHeaders = headers.getOrEmpty(HttpHeaders.SET_COOKIE);
         List<BiliCookie> cookies = setCookieHeaders.stream()
-            .flatMap(header -> HttpCookie.parse(header).stream())
-            .map(cookie -> new BiliCookie(
-                cookie.getName(),
-                cookie.getValue(),
-                cookie.getDomain(),
-                cookie.getPath(),
-                expiresFromMaxAge(cookie.getMaxAge()),
-                cookie.getSecure(),
-                cookie.isHttpOnly()
-            ))
-            .toList();
+                .flatMap(header -> HttpCookie.parse(header).stream())
+                .map(cookie -> new BiliCookie(
+                        cookie.getName(),
+                        cookie.getValue(),
+                        cookie.getDomain(),
+                        cookie.getPath(),
+                        expiresFromMaxAge(cookie.getMaxAge()),
+                        cookie.getSecure(),
+                        cookie.isHttpOnly()
+                ))
+                .toList();
 
         if (cookies.stream().noneMatch(c -> "SESSDATA".equals(c.name()))) {
             throw new SyncAPIClientException("BiliBili login response missing SESSDATA cookie");
@@ -112,14 +112,14 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
         Long timestampV = body.get("timestamp").asLong();
         Instant timestamp = Instant.ofEpochMilli(timestampV);
         Instant expiresAt = cookies.stream()
-            .map(BiliCookie::expires)
-            .filter(exp -> exp != null)
-            .min(Instant::compareTo)
-            .orElse(null);
+                .map(BiliCookie::expires)
+                .filter(exp -> exp != null)
+                .min(Instant::compareTo)
+                .orElse(null);
 
         BiliCookieCredential credential = new BiliCookieCredential(cookies, refreshToken, expiresAt);
         CredentialEnvelope<BiliCookieCredential> envelope = new CredentialEnvelope<>(
-            1, "bilibili:cookie", Instant.now(), credential);
+                1, "bilibili:cookie", Instant.now(), credential);
 
         String credentialJson;
         try {
@@ -129,7 +129,7 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
         }
 
         return new BiliDTO.LoginResultResponse(url, refreshToken, timestamp, credentialJson);
-    } 
+    }
 
     private Instant expiresFromMaxAge(long maxAge) {
         return maxAge < 0 ? null : Instant.now().plusSeconds(maxAge);
@@ -137,11 +137,12 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
 
     private String toCookieHeader(List<BiliCookie> cookies) {
         return cookies.stream()
-            .map(c -> c.name() + "=" + c.value())
-            .collect(Collectors.joining("; "));
+                .map(c -> c.name() + "=" + c.value())
+                .collect(Collectors.joining("; "));
     }
 
     private static final class BiliUri {
+
         public static final String GETLOGINQRCODEURI = "/x/passport-login/web/qrcode/generate";
         public static final String GETLOGINRESULTURI = "/x/passport-login/web/qrcode/poll";
         public static final String GETIFCOOKIENEEDREFRESHURI = "/x/passport-login/web/cookie/info";
@@ -152,60 +153,122 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
     }
 
     private static final class BiliHost {
-    public static final String PASSPORT = "https://passport.bilibili.com";
-    public static final String API      = "https://api.bilibili.com";
-}
+
+        public static final String PASSPORT = "https://passport.bilibili.com";
+        public static final String API = "https://api.bilibili.com";
+    }
 
     public static record CredentialEnvelope<T>(int version, String type, Instant createdAt, T payload) {}
 
     public static record BiliCookieCredential(List<BiliCookie> cookies, String refreshToken, Instant expiresAt) {}
 
     public static record BiliCookie(
-        String name,
-        String value,
-        String domain,
-        String path,
-        Instant expires,
-        boolean secure,
-        boolean httpOnly
-    ) {}
+            String name,
+            String value,
+            String domain,
+            String path,
+            Instant expires,
+            boolean secure,
+            boolean httpOnly
+            ) {}
 
     public static record BiliVideo(
-        String url,
-        boolean isLike,
-        boolean isFav,
-        boolean isCoin,
-        BiliFavFolder favFolder,
-        
-    ){}
+            String url,
+            boolean isLike,
+            boolean isFav,
+            boolean isCoin,
+            BiliFavFolder favFolder
+            ) {}
 
     public static record BiliFavFolder(
-        String id,
-        String fid,
-        String creatbyId,
-        int attr,//收藏夹属性位表0位标识是否为私有0公开1私有,1位表示是否为默认0默认1其他
-        String title,
-        int mediaCount,
-        Instant ctime,
-        Instant mtime,
-        boolean fav_state,
-        boolean like_state
-    ){}
+            long id,//收藏夹id(media_id)
+            long fid,
+            long creatbyId,//创建者mid
+            int attr,//收藏夹属性位表0位标识是否为私有0公开1私有,1位表示是否为默认0默认1其他
+            String title,
+            int mediaCount,
+            Instant ctime,
+            Instant mtime,
+            boolean fav_state,
+            boolean like_state
+            ) {}
 
     public static record BiliUp(
-        String id,
-        String spaceUrl,
-        boolean isSubscribe
-    ){}
+            long id,//up主mid
+            String spaceUrl,//uri
+            boolean isSubscribe,//是否订阅
+            String name,//昵称
+            String sex,//性别男/女/保密
+            String face,//头像uri
+            String sign,//签名
+            int rank,//用户权限等级
+            int level,//等级
+            //Instant joinTime,//入站事件//文档显示恒为0,测试符合文档不计入dto
+            boolean isSilence,//封禁状态
+            //int coins,//硬币数实验证明返回非自己的info时为0
+            int moral,//节操值//文档中显示这一项恒为0,需测试
+            boolean haveFansBadge,//是否有粉丝勋章
+            boolean wearingFansBadge,//是否佩戴粉丝勋章
+            boolean showingFansBadge,//是否显示粉丝勋章
+            List<FanMedal> fanMedals,//粉丝勋章列表
+            String topPhoto,//主页头图uri 
+            Instant birthday,//生日
+            boolean isSeniorMember,//是否为大会员
+            String sysNotice,//系统通知,本来不想加进来的发现这个会提示纪念账号,有所触动,故添加,本身是object现只记录通知内容
+            String school,//学校本来是个对象可是对象中只有一个name字段故直接记录name
+            BiliUserOfficial official,//认证信息
+            BiliUserProfession profession//职业信息
+            ) {}
+
+    private static record BiliUserOfficial(
+            int role,//见https://sessionhu.github.io/bilibili-API-collect/docs/user/official_role.html
+            String title,//认证信息
+            String desc,//认证备注
+            int type//认证类型-1：无0：个人认证1：机构认证
+            ) {}
+
+    private static record BiliUserProfession(
+            String name,//资质名称
+            String department,//职位
+            String title,//所属机构
+            int isShow//是否显示0n1y
+            ) {}
+
+    private static record BiliLiveRoom() {}
+
+    private static record FanMedal(
+            long uid,//拥有粉丝牌用户id
+            long targetId,//粉丝牌对应up主id
+            long medalId,//粉丝牌id
+            int level,//粉丝等级
+            String medalName,//粉丝牌名称
+            int medalColor,
+            int intimacy,//亲密度
+            int nextIntimacy,//到达下一级亲密度
+            int dayLimit,//每日亲密度上限
+            int todayFeed,//今日亲密度
+            int medalColorStart,//粉丝牌颜色起始值
+            int medal_color_border,//粉丝牌颜色边框值
+            int isLigheted,//是否点亮过
+            int LightStatus,//点亮状态
+            int score//滚木
+            ) {}
 
     private static class BiliDTO {
-        public record LoginPageUrlAndQrcodeKeyResponse(String responseUrl, String responseQrcodeKey) implements AuthInitResponse{}
-        public record LoginResultRequest(String QrcodeKey){}
-        public record LoginResultResponse(String url, String refreshToken, Instant timestamp, String credentialJson){}
-        public record MyInfoGetRequest(){}
-        public record MyInfoGetResponse(int mid, String uname, String userId, String sign, Instant birthday, String sex, String rank){}
-        public record GetFavlistRequest(String userId){}
-        public record GetFavlistResponse(int count, List<BiliFavFolder> folders){}
+
+        public record LoginPageUrlAndQrcodeKeyResponse(String responseUrl, String responseQrcodeKey) implements AuthInitResponse {}
+
+        public record LoginResultRequest(String QrcodeKey) {}
+
+        public record LoginResultResponse(String url, String refreshToken, Instant timestamp, String credentialJson) {}
+
+        public record MyInfoGetRequest() {}
+
+        public record MyInfoGetResponse(long mid, String uname, String userId, String sign, Instant birthday, String sex, String rank) {}
+
+        public record GetFavlistRequest(long upMid) {}//upMid:up主mid
+
+        public record GetFavlistResponse(int count, List<BiliFavFolder> folders) {}
     }
 
 }
