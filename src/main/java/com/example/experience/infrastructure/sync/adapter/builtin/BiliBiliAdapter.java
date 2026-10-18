@@ -328,7 +328,7 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
             long uposCount,//动态数
             long pugvCount,//课程数
             long audioCount,//音频数
-            long albumCount,//图文数
+            long albumCount, //图文数
             ) {}
 
     private static class BiliDTO {
