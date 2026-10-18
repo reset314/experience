@@ -217,7 +217,28 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
             String sysNotice,//系统通知,本来不想加进来的发现这个会提示纪念账号,有所触动,故添加,本身是object现只记录通知内容
             String school,//学校本来是个对象可是对象中只有一个name字段故直接记录name
             BiliUserOfficial official,//认证信息
-            BiliUserProfession profession//职业信息
+            BiliUserProfession profession,//职业信息
+            boolean is100Honour,//百大
+            int Followings,//关注数
+            int Followers,//粉丝数
+            long likeCount,//获赞数
+            int archiveCount,//投稿数
+            int videoCount,//视频数
+            int articleCount,//专栏数
+            int blackCount,//拉黑数
+            int whisperCount,//悄悄关注数
+            long archiveView,//总播放数
+            long articleView,//专栏总阅读数
+            long bangumiCount,//追番数
+            long cinemaCount,//追剧数
+            long channelCount,//视频列表数
+            long favouriteCount,//收藏夹数
+            long tagCount,//关注tag数
+            long seasonCount,//视频合集数
+            long uposCount,//动态数
+            long pugvCount,//课程数
+            long audioCount,//音频数
+            long albumCount//图文数
             ) {}
 
     private static record BiliUserOfficial(
@@ -229,9 +250,13 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
 
     private static record BiliUserProfession(
             String name,//资质名称
+            String showName,
             String department,//职位
             String title,//所属机构
-            int isShow//是否显示0n1y
+            int isShow,//是否显示0n1y
+            String realname,
+            String certificateNo,
+            boolean certificateShow//这两个是接口的不知道用处
             ) {}
 
     private static record BiliLiveRoom() {}
@@ -252,6 +277,58 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
             int isLigheted,//是否点亮过
             int LightStatus,//点亮状态
             int score//滚木
+            ) {}
+
+    private static record BiliMe(
+            long mid,//用户id
+            String name,//昵称
+            String sex,//性别
+            String face,//头像uri
+            String sign,//签名
+            Instant birthday,//生日
+            int rank,//用户权限等级
+            int level,//等级
+            int moral,//节操值
+            int isSilence,//封禁状态
+            int emailStatus,//邮箱验证状态
+            int telStatus,//手机号验证状态
+            int isTourist,//作用不明确
+            int isFakeAccount,//作用不明确
+            int pinPrompting,//作用不明确
+            int isDeteted,//作用不明确
+            double coins,//硬币数
+            double following,//关注数
+            double follower,//粉丝数
+            int vipType,//大会员类型
+            int vipStatus,//大会员状态
+            int vipDueDate,//大会员到期时间
+            //以上三个字段均为vip对象中的字段我懒得再写一个vip的record了
+            long pid,//挂件id
+            String pidName,//挂件名称
+            String pidIcon,//挂件图标uri
+            String pidImageEnhance,//如果挂件是动图其动图uri
+            //以上三个是pendant对象中的字段
+            BiliUserOfficial official,//认证信息
+            BiliUserProfession profession,//职业信息
+            int currentExp,//当前经验
+            long likeCount,//获赞数
+            int archiveCount,//投稿数
+            int videoCount,//视频数
+            int articleCount,//专栏数
+            int blackCount,//拉黑数
+            int whisperCount,//悄悄关注数
+            long archiveView,//总播放数
+            long articleView,//专栏总阅读数
+            long bangumiCount,//追番数
+            long cinemaCount,//追剧数
+            long channelCount,//视频列表数
+            long favouriteCount,//收藏夹数
+            long tagCount,//关注tag数
+            long seasonCount,//视频合集数
+            long uposCount,//动态数
+            long pugvCount,//课程数
+            long audioCount,//音频数
+            long albumCount,//图文数
             ) {}
 
     private static class BiliDTO {
