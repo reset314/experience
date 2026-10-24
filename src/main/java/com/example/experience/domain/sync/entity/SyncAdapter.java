@@ -33,6 +33,7 @@ public class SyncAdapter {
     @Column(length = 32, nullable = false, updatable = false)
     private String id;
 
+    //适配器标识=适配器类名
     @Column(name = "adapter_key", length = 128, nullable = false, unique = true)
     private String adapterKey;
 
