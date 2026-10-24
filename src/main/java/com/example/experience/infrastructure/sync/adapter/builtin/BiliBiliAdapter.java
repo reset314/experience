@@ -21,6 +21,7 @@ import com.example.experience.infrastructure.sync.adapter.SyncAdapterHandler;
 import com.example.experience.infrastructure.sync.adapter.SyncResult;
 import com.example.experience.infrastructure.sync.adapter.auth.AuthInitRequest;
 import com.example.experience.infrastructure.sync.adapter.auth.AuthInitResponse;
+import com.example.experience.infrastructure.sync.adapter.builtin.BiliBiliAdapter.BiliFavFolder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -173,6 +174,8 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
             ) {}
 
     public static record BiliVideo(
+            String bvid,//bv
+            long aid,//av
             String url,
             boolean isLike,
             boolean isFav,
@@ -329,7 +332,37 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
             long pugvCount,//课程数
             long audioCount,//音频数
             long albumCount, //图文数
+            BiliFollow follow,//关注信息
+            BiliBlock block//拉黑信息
             ) {}
+    
+    /* 目前只认为存储我的关注 */
+    private static record BiliRelation(
+        long mid,//用户id
+        long targetId,//目标用户id
+        int attribute,//关系属性0:无1:关注2:粉丝3:互相关注4:拉黑5:悄悄关注6:被悄悄关注7:被拉黑
+        List<Integer> tags,
+        boolean isSpecial,//是否为特别关注
+        Instant mtime//关注时间
+    ){}
+
+    private static record BiliFollowGroup(
+        long id,//分组id
+        String name,//分组名称
+        int count,//分组内关注数
+        String tip//提示信息
+    ){}
+
+    private static record BiliFollow(
+        List<BiliRelation> relations,
+        List<BiliFollowGroup> groups,
+        int total//总数
+    ){}
+
+    private static record BiliBlock(
+        int total,//总数
+        List<BiliRelation> relations
+    ){}
 
     private static class BiliDTO {
 
