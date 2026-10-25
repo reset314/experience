@@ -16,6 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.example.experience.common.exception.SyncAPIAuthException;
 import com.example.experience.common.exception.SyncAPIClientException;
 import com.example.experience.common.exception.SyncAPIServiceException;
+import com.example.experience.infrastructure.sync.adapter.AdapterManifest;
 import com.example.experience.infrastructure.sync.adapter.FetchContext;
 import com.example.experience.infrastructure.sync.adapter.SyncAdapterHandler;
 import com.example.experience.infrastructure.sync.adapter.SyncResult;
@@ -25,11 +26,17 @@ import com.example.experience.infrastructure.sync.adapter.builtin.BiliBiliAdapte
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import kotlin.OverloadResolutionByLambdaReturnType;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
 public class BiliBiliAdapter implements SyncAdapterHandler {
+
+    @Override
+    public AdapterManifest manifest(){
+        return AdapterManifest.builder().version("1").build(); 
+    }
 
     private final RestClient biliClient = RestClient.builder()
             .defaultStatusHandler(HttpStatusCode::is5xxServerError, (req, res) -> {
@@ -51,6 +58,11 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
 
     @Override
     public SyncResult fetchEvents(FetchContext ctx) {
+        return null;
+    }
+
+    @Override
+    public SyncResult uploadEvent(FetchContext ctx) {
         return null;
     }
 

@@ -9,6 +9,8 @@ import com.example.experience.infrastructure.sync.adapter.auth.AuthStatusRespons
 
 public interface SyncAdapterHandler {
 
+    AdapterManifest manifest();
+
     /**
      * 从数据源拉取事件。
      */

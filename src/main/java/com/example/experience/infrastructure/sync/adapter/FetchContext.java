@@ -10,4 +10,6 @@ public interface FetchContext {
     UserDataSource dataSource();
 
     Platform platform();
+
+    AdapterManifest manifest();
 }
