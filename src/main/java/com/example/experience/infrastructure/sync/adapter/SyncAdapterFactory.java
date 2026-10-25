@@ -1,20 +1,17 @@
 package com.example.experience.infrastructure.sync.adapter;
 
-import com.example.experience.domain.datasource.entity.UserDataSource;
 import com.example.experience.domain.media.entity.MediaFile;
-import com.example.experience.domain.platform.entity.Platform;
 
 public interface SyncAdapterFactory {
 
-    String getCredential(UserDataSource dataSource, String key);
+    String getCredential(FetchContext ctx, String key);
 
-    String getSyncConfig(UserDataSource dataSource);
+    String getSyncConfig(FetchContext ctx);
 
-    String getPlatformConfig(Platform platform);
+    String getPlatformConfig(FetchContext ctx);
 
-    MediaFile downloadMedia(UserDataSource dataSource, String url);
+    MediaFile downloadMedia(FetchContext ctx, String url);
 
-    /**type必须是manifest声明了的 */
     WriteResult upsertEntity(FetchContext ctx, String type, String snapshotJson);
 
     /**

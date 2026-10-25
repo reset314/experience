@@ -2,9 +2,7 @@ package com.example.experience.infrastructure.sync.adapter;
 
 import org.springframework.stereotype.Component;
 
-import com.example.experience.domain.datasource.entity.UserDataSource;
 import com.example.experience.domain.media.entity.MediaFile;
-import com.example.experience.domain.platform.entity.Platform;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,22 +13,22 @@ import lombok.extern.slf4j.Slf4j;
 public class SyncAdapterFactoryImpl implements SyncAdapterFactory {
 
     @Override
-    public String getCredential(UserDataSource dataSource, String key) {
+    public String getCredential(FetchContext ctx, String key) {
         return null;
     }
 
     @Override
-    public String getSyncConfig(UserDataSource dataSource) {
-        return dataSource != null ? dataSource.getSyncConfig() : null;
+    public String getSyncConfig(FetchContext ctx) {
+        return ctx.dataSource() != null ? ctx.dataSource().getSyncConfig() : null;
     }
 
     @Override
-    public String getPlatformConfig(Platform platform) {
-        return platform != null ? platform.getConfig() : null;
+    public String getPlatformConfig(FetchContext ctx) {
+        return ctx.platform() != null ? ctx.platform().getConfig() : null;
     }
 
     @Override
-    public MediaFile downloadMedia(UserDataSource dataSource, String url) {
+    public MediaFile downloadMedia(FetchContext ctx, String url) {
         return null;
     }
 
