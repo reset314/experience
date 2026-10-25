@@ -8,18 +8,16 @@ import com.example.experience.infrastructure.sync.adapter.SyncResult;
 public class DiaryAdapter implements SyncAdapterHandler {
 
     @Override
-    public AdapterManifest manifest(){
-        return AdapterManifest.builder().version("1").build(); 
+    public AdapterManifest manifest() {
+        return AdapterManifest.builder().version("1").build();
     }
 
     @Override
-    public SyncResult fetchEvents(FetchContext ctx) { 
-        return null;
+    public void fetchEvents(FetchContext ctx) {
     }
 
     @Override
-    public SyncResult uploadEvent(FetchContext ctx) {
-        return null;
+    public void uploadEvent(FetchContext ctx) {
     }
 
 }

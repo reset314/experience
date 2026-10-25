@@ -57,13 +57,11 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
     }
 
     @Override
-    public SyncResult fetchEvents(FetchContext ctx) {
-        return null;
+    public void  fetchEvents(FetchContext ctx) {
     }
 
     @Override
-    public SyncResult uploadEvent(FetchContext ctx) {
-        return null;
+    public void  uploadEvent(FetchContext ctx) {
     }
 
     @Override
