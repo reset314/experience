@@ -47,7 +47,7 @@ public class UserDataSource {
     @Column(name = "platform_name", length = 64, nullable = false)
     private String platformName;
 
-    @Column(name = "source_identifier", length = 255, nullable = false)
+    @Column(name = "source_identifier", length = 255)
     private String sourceIdentifier;
 
     @Column(name = "display_name", length = 128, nullable = true)
