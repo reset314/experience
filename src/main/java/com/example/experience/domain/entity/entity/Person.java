@@ -21,6 +21,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
+/**
+ * 个人信息表
+ */
 @Entity
 @Table(name = "persons")
 @Getter
@@ -40,9 +44,6 @@ public class Person {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @Column(name = "canonical_entity_id", length = 32, nullable = true)
-    private String canonicalEntityId;
 
     @Column(name = "display_name", length = 255, nullable = true)
     private String displayName;
