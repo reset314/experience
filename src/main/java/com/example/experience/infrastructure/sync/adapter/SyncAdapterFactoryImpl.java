@@ -3,6 +3,7 @@ package com.example.experience.infrastructure.sync.adapter;
 import org.springframework.stereotype.Component;
 
 import com.example.experience.domain.datasource.entity.UserDataSource;
+import com.example.experience.domain.entity.entity.EntityRecord;
 import com.example.experience.domain.event.entity.Event;
 import com.example.experience.domain.media.entity.MediaFile;
 import com.example.experience.domain.platform.entity.Platform;
@@ -35,13 +36,40 @@ public class SyncAdapterFactoryImpl implements SyncAdapterFactory {
         throw new UnsupportedOperationException("downloadMedia not implemented yet");
     }
 
-    @Override
-    public Event saveEvent(Event event) {
-        throw new UnsupportedOperationException("saveEvent not implemented yet");
-    }
 
     @Override
     public void log(String message) {
         log.info(message);
+    }
+
+    @Override
+    public Event createEvent(Event event){
+        return null;
+    }
+
+    @Override 
+    public Event uploadEvent(Event event){
+        return null;
+    }
+
+    @Override 
+    public Event deleteEvent(Event event){
+        return null;
+    }
+
+
+    @Override
+    public EntityRecord createEntityRecord(EntityRecord event){
+        return null;
+    }
+
+    @Override 
+    public EntityRecord uploadEntityRecord(EntityRecord event){
+        return null;
+    }
+
+    @Override 
+    public EntityRecord deleteEntityRecord(EntityRecord event){
+        return null;
     }
 }
