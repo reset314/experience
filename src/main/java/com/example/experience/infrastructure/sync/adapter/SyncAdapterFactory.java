@@ -1,14 +1,9 @@
 package com.example.experience.infrastructure.sync.adapter;
 
 import com.example.experience.domain.datasource.entity.UserDataSource;
-import com.example.experience.domain.entity.entity.EntityRecord;
-import com.example.experience.domain.event.entity.Event;
 import com.example.experience.domain.media.entity.MediaFile;
 import com.example.experience.domain.platform.entity.Platform;
 
-/**
- * 同步适配器工厂接口。
- */
 public interface SyncAdapterFactory {
 
     String getCredential(UserDataSource dataSource, String key);
@@ -19,17 +14,17 @@ public interface SyncAdapterFactory {
 
     MediaFile downloadMedia(UserDataSource dataSource, String url);
 
-    Event createEvent(Event event);
+    /**type必须是manifest声明了的 */
+    WriteResult upsertEntity(FetchContext ctx, String type, String snapshotJson);
 
-    Event uploadEvent(Event event);
+    /**
+        包含了写入和插入
+     */
+    WriteResult upsertEvent(FetchContext ctx, String eventType, String payloadJson);
 
-    Event deleteEvent(Event event);
+    void deleteEntity(FetchContext ctx, String type, String identityKey);
 
-    EntityRecord createEntityRecord(EntityRecord event);
-
-    EntityRecord uploadEntityRecord(EntityRecord event);
-
-    EntityRecord deleteEntityRecord(EntityRecord event);
+    void deleteEvent(FetchContext ctx, String eventType, String dedupKey);
 
     void log(String message);
 }
