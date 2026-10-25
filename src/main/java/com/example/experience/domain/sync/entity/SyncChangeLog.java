@@ -59,9 +59,6 @@ public class SyncChangeLog {
     @Column(name = "op", length = 16, nullable = false, updatable = false)
     private String op;
 
-    @Column(name = "change_key", length = 64, nullable = true, updatable = false)
-    private String changeKey;
-
     @Column(name = "diff", columnDefinition = "JSONB", nullable = false, updatable = false)
     private String diff;
 

@@ -9,7 +9,10 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.example.experience.domain.entity.entity.EntityRecord;
 
 public interface EntityRecordRepository extends JpaRepository<EntityRecord, String>, JpaSpecificationExecutor<EntityRecord> {
-    List<EntityRecord> findByCreatedBy(String createdBy);
 
-    Optional<EntityRecord> findByIdAndCreatedBy(String id, String createdBy);
+    List<EntityRecord> findByUserIdAndType(String userId, String type);
+
+    List<EntityRecord> findByUserIdAndPlatformAndType(String userId, String platform, String type);
+
+    Optional<EntityRecord> findByIdAndUserId(String id, String userId);
 }
