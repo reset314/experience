@@ -63,11 +63,6 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
     public void  uploadEvent(FetchContext ctx) {
     }
 
-    @Override
-    public BiliDTO.LoginPageUrlAndQrcodeKeyResponse initiateAuth(AuthInitRequest requset) {
-
-        return null;
-    }
 
     private BiliDTO.LoginPageUrlAndQrcodeKeyResponse getLoginPageUrlAndQrcodeKey() {
         URI uri = UriComponentsBuilder.fromUriString(BiliHost.PASSPORT)
