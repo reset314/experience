@@ -19,7 +19,6 @@ import com.example.experience.common.exception.SyncAPIServiceException;
 import com.example.experience.infrastructure.sync.adapter.AdapterManifest;
 import com.example.experience.infrastructure.sync.adapter.FetchContext;
 import com.example.experience.infrastructure.sync.adapter.SyncAdapterHandler;
-import com.example.experience.infrastructure.sync.adapter.SyncResult;
 import com.example.experience.infrastructure.sync.adapter.auth.AuthInitRequest;
 import com.example.experience.infrastructure.sync.adapter.auth.AuthInitResponse;
 import com.example.experience.infrastructure.sync.adapter.builtin.BiliBiliAdapter.BiliFavFolder;
