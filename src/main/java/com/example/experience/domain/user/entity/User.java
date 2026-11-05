@@ -1,23 +1,19 @@
 package com.example.experience.domain.user.entity;
 
-import java.time.Instant;
-
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.simpleframework.xml.Default;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.time.Instant;
 
 @Entity
 @Table(name = "users")
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class User {
@@ -26,20 +22,21 @@ public class User {
     @Column(name = "id", length = 32, nullable = false, updatable = false)
     private String id;
 
-    @Column(name = "username", length = 64, nullable = false, unique = true)
+    @Column(name = "username", length = 64, nullable = false, unique = true, updatable = false)
     private String username;
 
-    @Column(name = "password_hash", length = 255, nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(name = "email", length = 255, nullable = true, unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "phone", length = 32, nullable = true, unique = true)
+    @Column(name = "phone", length = 32, unique = true)
     private String phone;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 16, nullable = false)
-    private String status = "active";
+    private UserStatus status = UserStatus.ACTIVE;
 
     @Column(name = "token_version", nullable = false)
     @Default
@@ -64,4 +61,36 @@ public class User {
         user.passwordHash = passwordHash;
         return user;
     }
+
+    private void bumpTokenVersion(){
+        this.tokenVersion += 1;
+    }
+
+    public void suspend(){
+        this.status = UserStatus.SUSPENDED;
+        bumpTokenVersion();
+    }
+
+    public void activate() {
+        this.status = UserStatus.ACTIVE;
+    }
+
+    public void recordLogin(Instant loginAt) {
+        this.lastLoginAt = loginAt;
+    }
+
+    public void changePassword(String newPasswordHash) {
+        this.passwordHash = newPasswordHash;
+        bumpTokenVersion();
+    }
+
+    public void changePhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void changeEmail(String email) {
+        this.email = email;
+    }
+
+
 }
