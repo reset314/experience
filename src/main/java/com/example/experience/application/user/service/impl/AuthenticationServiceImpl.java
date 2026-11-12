@@ -1,13 +1,5 @@
 package com.example.experience.application.user.service.impl;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.example.experience.application.user.dto.DeviceInfo;
 import com.example.experience.application.user.dto.RefreshRequest;
 import com.example.experience.application.user.dto.TokenResponse;
@@ -20,8 +12,14 @@ import com.example.experience.domain.rbac.repository.UserRoleRepository;
 import com.example.experience.domain.user.entity.User;
 import com.example.experience.domain.user.entity.UserSession;
 import com.example.experience.domain.user.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new IllegalArgumentException("User account is not active");
         }
 
-        user.setLastLoginAt(Instant.now());
+        user.updateLastLoginAt(Instant.now());
         userRepository.save(user);
 
         List<String> roles = loadRoles(user.getId());

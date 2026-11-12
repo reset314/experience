@@ -1,4 +1,10 @@
 package com.example.experience.application.user.dto;
 
-public record RegisterRequest(String username, String email, String password) {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.constraints.NotBlank;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record RegisterRequest(
+        @NotBlank String username,
+        @NotBlank String password) {
 }

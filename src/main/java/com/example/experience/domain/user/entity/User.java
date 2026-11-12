@@ -84,6 +84,10 @@ public class User {
         bumpTokenVersion();
     }
 
+    public void updateLastLoginAt(Instant lastLoginAt) {
+        this.lastLoginAt = lastLoginAt;
+    }
+
     public void changePhone(String phone) {
         this.phone = phone;
     }
