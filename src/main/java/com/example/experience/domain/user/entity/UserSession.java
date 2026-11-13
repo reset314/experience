@@ -1,24 +1,15 @@
 package com.example.experience.domain.user.entity;
 
-import java.time.Instant;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.Instant;
 
 @Entity
 @Table(name = "user_sessions")
@@ -48,8 +39,9 @@ public class UserSession {
     @Column(name = "user_agent", columnDefinition = "TEXT")
     private String userAgent;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 16, nullable = false)
-    private String status = "active";
+    private SessionStatu status = SessionStatu.ACTIVE;
 
     @Column(name = "issued_at", nullable = false, updatable = false)
     private Instant issuedAt;
@@ -87,7 +79,7 @@ public class UserSession {
     }
 
     public void revoke() {
-        this.status = "revoked";
+        this.status = SessionStatu.REVOKED;
     }
 
     public void markUsed() {
@@ -95,10 +87,10 @@ public class UserSession {
     }
 
     public boolean isExpired() {
-        return Instant.now().isAfter(this.expiresAt);
+        return !Instant.now().isAfter(this.expiresAt);
     }
 
     public boolean isActive() {
-        return "active".equals(this.status) && !isExpired();
+        return this.status==SessionStatu.ACTIVE && isExpired();
     }
 }

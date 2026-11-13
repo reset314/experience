@@ -1,9 +1,8 @@
 package com.example.experience.application.user.service;
 
-import com.example.experience.application.user.dto.ChangePasswordRequest;
-import com.example.experience.application.user.dto.ChangeProfileRequest;
-import com.example.experience.application.user.dto.UserProfileResponse;
-import com.example.experience.application.user.dto.UserResponse;
+import com.example.experience.application.user.dto.*;
+
+import java.util.List;
 
 public interface UserService {
     UserResponse createUser(String username, String email, String rawPassword, String roleName);
@@ -13,4 +12,12 @@ public interface UserService {
     void updatePassword(ChangePasswordRequest request);
 
     UserProfileResponse updateUserProfile(ChangeProfileRequest request);
+
+    void deleteSession(String userId,String sessionId);
+
+    void deleteAllSessions(String userId);
+
+    List<SessionResponse> getUserSessions(String userId);
+
+    List<UserPermissionsResponse> getUserPermissions(String userId);
 }

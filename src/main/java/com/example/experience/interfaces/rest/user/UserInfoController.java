@@ -1,14 +1,14 @@
 package com.example.experience.interfaces.rest.user;
 
-import com.example.experience.application.user.dto.ChangePasswordRequest;
-import com.example.experience.application.user.dto.ChangeProfileRequest;
-import com.example.experience.application.user.dto.UserProfileResponse;
+import com.example.experience.application.user.dto.*;
 import com.example.experience.application.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.JsonNode;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/me")
@@ -44,8 +44,28 @@ public class UserInfoController {
         ChangeProfileRequest cprreq = new ChangeProfileRequest(userId, avatarUri, diaplayName, setting);
         UserProfileResponse userProfileResponse = userService.updateUserProfile(cprreq);
         return ResponseEntity.ok(userProfileResponse);
-
     }
 
+    @GetMapping("/sessions")
+    public ResponseEntity<List<SessionResponse>> getSession(@AuthenticationPrincipal String userId) {
+        List<SessionResponse> sessionResponse = userService.getUserSessions(userId);
+        return ResponseEntity.ok(sessionResponse);
+    }
+
+    @DeleteMapping("/sessions/{id}")
+    public void deleteSession(@AuthenticationPrincipal String userId, @PathVariable String id){
+        userService.deleteSession(userId,id);
+    }
+
+    @DeleteMapping("/sessions")
+    public void deleteSessions(@AuthenticationPrincipal String userId) {
+        userService.deleteAllSessions(userId);
+    }
+
+    @GetMapping("/permissions")
+    public ResponseEntity<List<UserPermissionsResponse>> getPermissions(@AuthenticationPrincipal String userId) {
+        List<UserPermissionsResponse> userPermissionsResponse = userService.getUserPermissions(userId);
+        return ResponseEntity.ok(userPermissionsResponse);
+    }
     
 }
