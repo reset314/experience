@@ -1,23 +1,20 @@
 package com.example.experience.domain.sync.entity;
 
-import java.time.Instant;
-
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.time.Instant;
 
+
+/**
+ * diff格式:
+ * create 完整快照
+ * update {"path":{"from":...,"to":...},...}删除某个字段或添加某个字段也是update
+ * delete 完整快照
+ * */
 @Entity
 @Table(name = "sync_change_logs", indexes = {
     @Index(name = "ix_scl_target", columnList = "target_kind, target_id, id"),
@@ -38,8 +35,10 @@ public class SyncChangeLog {
     @Column(name = "user_id", length = 32, nullable = false, updatable = false)
     private String userId;
 
+    //entity/event/person
+    @Enumerated(EnumType.STRING)
     @Column(name = "target_kind", length = 16, nullable = false, updatable = false)
-    private String targetKind;
+    private SyncTargetKind targetKind;
 
     /**
      * 目标对象的id
@@ -48,7 +47,7 @@ public class SyncChangeLog {
     private String targetId;
 
     /**
-     * 解释当前日志所属的对象类型防止删除后不止到类型
+     * 解释当前日志所属的对象类型防止删除后不知道类型
      */
     @Column(name = "target_type", length = 64, nullable = false, updatable = false)
     private String targetType;
@@ -56,8 +55,14 @@ public class SyncChangeLog {
     /**
      * 操作类型create update delete
      */
+    @Enumerated(EnumType.STRING)
     @Column(name = "op", length = 16, nullable = false, updatable = false)
-    private String op;
+    private SyncChangeOp op;
+
+    //sync manual import来源类型
+    @Enumerated(EnumType.STRING)
+    @Column(name = "origin", length = 16)
+    private SyncChangeOrigin origin;
 
     @Column(name = "diff", columnDefinition = "JSONB", nullable = false, updatable = false)
     private String diff;

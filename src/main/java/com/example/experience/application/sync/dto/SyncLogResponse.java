@@ -1,5 +1,7 @@
 package com.example.experience.application.sync.dto;
 
+import com.example.experience.domain.sync.entity.SyncStatus;
+
 public record SyncLogResponse(
     String id,
     String createdBy,
@@ -7,7 +9,7 @@ public record SyncLogResponse(
     String dataSourceName,
     String startedAt,
     String finishedAt,
-    String status,
+    SyncStatus status,
     Long eventsFetched,
     Long eventsInserted,
     Long mediaDownloaded
