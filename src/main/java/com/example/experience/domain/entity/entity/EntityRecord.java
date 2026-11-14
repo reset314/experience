@@ -1,26 +1,18 @@
 package com.example.experience.domain.entity.entity;
 
-import java.time.Instant;
-
+import com.example.experience.domain.user.entity.User;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.example.experience.domain.user.entity.User;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import javax.sql.DataSource;
+import java.time.Instant;
 
 /**
  * 实体表
@@ -40,34 +32,32 @@ public class EntityRecord {
     @Column(length = 32, nullable = false, updatable = false)
     private String id;
 
-    @CreatedBy
-    @Column(name = "created_by", length = 64, nullable = false)
-    private String createdBy;
-
     /**
      * 数据归属压缩查询成本
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    /**
-     * 数据来源平台压缩查询成本
-     */
-    @Column(name = "platform", length = 64, nullable = true)
-    private String platform;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "data_source_id", nullable = false)
+    private DataSource dataSource;
 
     @Column(name = "type", length = 32, nullable = false)
     private String type;
 
+    //幂等键
+    @Column(name = "identity_key")
+    private String identityKey;
+
     @Column(name = "display_name", length = 255, nullable = true)
     private String displayName;
 
-    @Column(name = "relations", columnDefinition = "JSON", nullable = true)
-    private String relations;
-
     @Column(name = "metadata", columnDefinition = "JSONB", nullable = true)
     private String metadata;
+
+    @Column(name = "version")
+    private Integer version;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -77,12 +67,20 @@ public class EntityRecord {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    public static EntityRecord create(String id, User user, String platform, String type) {
+    @CreatedBy
+    @Column(name = "created_by", length = 64, nullable = false)
+    private String createdBy;
+
+    public static EntityRecord create(String id, User user, DataSource dataSource, String type) {
         EntityRecord record = new EntityRecord();
         record.id = id;
         record.user = user;
-        record.platform = platform;
+        record.dataSource = dataSource;
         record.type = type;
         return record;
+    }
+
+    public void updateVersion(){
+        this.version+=1;
     }
 }
