@@ -1,26 +1,22 @@
 package com.example.experience.domain.datasource.entity;
 
-import java.time.Instant;
-
+import com.example.experience.domain.user.entity.User;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.example.experience.domain.user.entity.User;
+import java.time.Instant;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+/**
+ * !!!不加密
+ * */
 @Entity
 @Table(name = "user_credentials")
 @Getter
@@ -33,15 +29,11 @@ public class UserCredential {
     @Column(length = 32, nullable = false, updatable = false)
     private String id;
 
-    @CreatedBy
-    @Column(name = "created_by", length = 64, nullable = false)
-    private String createdBy;
-
-    @ManyToOne
+    @ManyToOne(fetch= FetchType.LAZY,optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch= FetchType.LAZY,optional = false)
     @JoinColumn(name = "data_source_id", nullable = false)
     private UserDataSource dataSource;
 
@@ -52,7 +44,7 @@ public class UserCredential {
     private String credential;
 
     @Column(name = "status", length = 32, nullable = false)
-    private String status = "active";
+    private CredentialStatus status;
 
     @Column(name = "expires_at", nullable = true)
     private Instant expiresAt;
@@ -66,6 +58,10 @@ public class UserCredential {
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
+
+    @CreatedBy
+    @Column(name = "created_by", length = 64, nullable = false)
+    private String createdBy;
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
