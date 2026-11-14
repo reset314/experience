@@ -1,8 +1,13 @@
 package com.example.experience.infrastructure.security;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.example.experience.application.user.dto.JwtClaims;
+import com.example.experience.application.user.service.JwtService;
+import com.example.experience.domain.rbac.RbacPolicy;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,14 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.example.experience.application.user.dto.JwtClaims;
-import com.example.experience.application.user.service.JwtService;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token)) {
             JwtClaims claims = jwtService.validateAccessToken(token);
             if (claims != null) {
-                List<SimpleGrantedAuthority> authorities = claims.roles().stream()
+                List<SimpleGrantedAuthority> authorities = RbacPolicy.authorityCodes(claims.roles()).stream()
                     .map(SimpleGrantedAuthority::new)
                     .toList();
 

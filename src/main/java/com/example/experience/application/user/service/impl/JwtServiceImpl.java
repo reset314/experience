@@ -1,22 +1,20 @@
 package com.example.experience.application.user.service.impl;
 
-import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-
-import javax.crypto.SecretKey;
-
-import org.springframework.stereotype.Service;
-
 import com.example.experience.application.user.dto.JwtClaims;
 import com.example.experience.application.user.service.JwtService;
+import com.example.experience.domain.rbac.Role;
 import com.example.experience.domain.user.entity.User;
 import com.example.experience.infrastructure.config.AuthProperties;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class JwtServiceImpl implements JwtService {
@@ -30,14 +28,14 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateAccessToken(User user, List<String> roles) {
+    public String generateAccessToken(User user, List<Role> roles) {
         Instant now = Instant.now();
         Instant expiration = now.plus(authProperties.accessTokenExpiration());
 
         return Jwts.builder()
             .subject(user.getId())
             .claim("username", user.getUsername())
-            .claim("roles", roles)
+            .claim("roles", roles.stream().map(Role::getCode).toList())
             .issuedAt(Date.from(now))
             .expiration(Date.from(expiration))
             .signWith(secretKey)
@@ -56,7 +54,10 @@ public class JwtServiceImpl implements JwtService {
             String userId = claims.getSubject();
             String username = claims.get("username", String.class);
             @SuppressWarnings("unchecked")
-            List<String> roles = claims.get("roles", List.class);
+            List<String> roleCodes = claims.get("roles", List.class);
+            List<Role> roles = roleCodes == null
+                ? List.of()
+                : roleCodes.stream().map(Role::fromCode).toList();
 
             return new JwtClaims(userId, username, roles);
         } catch (JwtException | IllegalArgumentException e) {

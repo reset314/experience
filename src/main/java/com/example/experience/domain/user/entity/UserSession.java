@@ -12,7 +12,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.Instant;
 
 @Entity
-@Table(name = "user_sessions")
+@Table(name = "user_sessions",
+        indexes = @Index(name = "idx_user_sessions_previous_token_hash", columnList = "previous_token_hash"))
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,6 +27,9 @@ public class UserSession {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
     private User user;
+
+    @Column(name = "previous_token_hash", length = 64)
+    private String previousTokenHash;
 
     @Column(name = "refresh_token_hash", length = 64, nullable = false, unique = true)
     private String refreshTokenHash;
@@ -48,6 +52,13 @@ public class UserSession {
 
     @Column(name = "expires_at", nullable = false)
     private Instant expiresAt;
+
+    @Column(name = "revoked_at")
+    private Instant revokedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "revoke_reason", length = 32)
+    private RevokeReason revokeReason;
 
     @Column(name = "last_used_at")
     private Instant lastUsedAt;
@@ -78,8 +89,17 @@ public class UserSession {
         return session;
     }
 
-    public void revoke() {
+    public void revoke(RevokeReason revokeReason) {
         this.status = SessionStatu.REVOKED;
+        this.revokeReason = revokeReason;
+        this.revokedAt = Instant.now();
+    }
+
+    public void rotate(String newRefreshTokenHash, Instant newExpiresAt) {
+        this.previousTokenHash = this.refreshTokenHash;
+        this.refreshTokenHash = newRefreshTokenHash;
+        this.expiresAt = newExpiresAt;
+        markUsed();
     }
 
     public void markUsed() {
@@ -87,10 +107,10 @@ public class UserSession {
     }
 
     public boolean isExpired() {
-        return !Instant.now().isAfter(this.expiresAt);
+        return !Instant.now().isBefore(this.expiresAt);
     }
 
     public boolean isActive() {
-        return this.status==SessionStatu.ACTIVE && isExpired();
+        return this.status == SessionStatu.ACTIVE && !isExpired();
     }
 }

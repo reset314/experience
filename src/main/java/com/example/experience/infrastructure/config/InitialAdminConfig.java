@@ -1,17 +1,16 @@
 package com.example.experience.infrastructure.config;
 
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
-
 import com.example.experience.application.user.service.UserService;
+import com.example.experience.domain.rbac.Role;
 import com.example.experience.domain.user.repository.UserRepository;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 
 @Slf4j
 @Configuration
@@ -25,7 +24,6 @@ public class InitialAdminConfig {
     private final UserService userService;
 
     private String username;
-    private String email;
     private String password;
 
     @EventListener(ApplicationReadyEvent.class)
@@ -35,7 +33,7 @@ public class InitialAdminConfig {
             return;
         }
         if (userRepository.findByUsername(username).isEmpty()) {
-            userService.createUser(username, email, password, "superadmin");
+            userService.createUser(username, password, Role.SUPERADMIN);
             log.info("Created initial superadmin user: {}", username);
         }
     }

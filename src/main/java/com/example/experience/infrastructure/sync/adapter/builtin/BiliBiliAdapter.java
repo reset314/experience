@@ -1,11 +1,12 @@
 package com.example.experience.infrastructure.sync.adapter.builtin;
 
-import java.net.HttpCookie;
-import java.net.URI;
-import java.time.Instant;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.example.experience.common.exception.SyncAPIAuthException;
+import com.example.experience.common.exception.SyncAPIClientException;
+import com.example.experience.common.exception.SyncAPIServiceException;
+import com.example.experience.infrastructure.sync.adapter.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -13,17 +14,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.example.experience.common.exception.SyncAPIAuthException;
-import com.example.experience.common.exception.SyncAPIClientException;
-import com.example.experience.common.exception.SyncAPIServiceException;
-import com.example.experience.infrastructure.sync.adapter.AdapterManifest;
-import com.example.experience.infrastructure.sync.adapter.FetchContext;
-import com.example.experience.infrastructure.sync.adapter.SyncAdapterHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import kotlin.OverloadResolutionByLambdaReturnType;
-import lombok.extern.slf4j.Slf4j;
+import java.net.HttpCookie;
+import java.net.URI;
+import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -58,6 +53,21 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
 
     @Override
     public void  uploadEvent(FetchContext ctx) {
+    }
+
+    @Override
+    public AuthResult initAuth(FetchContext ctx, AuthRequest authRequest) {
+        return null;
+    }
+
+    @Override
+    public AuthResult cheakAuthState(FetchContext ctx, AuthRequest authRequest) {
+        return null;
+    }
+
+    @Override
+    public AuthResult continueAuth(FetchContext ctx, AuthRequest authRequest) {
+        return null;
     }
 
 
@@ -367,7 +377,7 @@ public class BiliBiliAdapter implements SyncAdapterHandler {
 
     private static class BiliDTO {
 
-        public record LoginPageUrlAndQrcodeKeyResponse(String responseUrl, String responseQrcodeKey) implements AuthInitResponse {}
+        public record LoginPageUrlAndQrcodeKeyResponse(String responseUrl, String responseQrcodeKey) {}
 
         public record LoginResultRequest(String QrcodeKey) {}
 

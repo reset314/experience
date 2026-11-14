@@ -6,9 +6,10 @@ import com.example.experience.application.user.dto.TokenResponse;
 import com.example.experience.application.user.service.AuthenticationService;
 import com.example.experience.application.user.service.JwtService;
 import com.example.experience.application.user.service.UserSessionService;
-import com.example.experience.domain.rbac.entity.Role;
+import com.example.experience.domain.rbac.Role;
 import com.example.experience.domain.rbac.entity.UserRole;
 import com.example.experience.domain.rbac.repository.UserRoleRepository;
+import com.example.experience.domain.user.entity.RevokeReason;
 import com.example.experience.domain.user.entity.User;
 import com.example.experience.domain.user.entity.UserSession;
 import com.example.experience.domain.user.repository.UserRepository;
@@ -48,7 +49,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.updateLastLoginAt(Instant.now());
         userRepository.save(user);
 
-        List<String> roles = loadRoles(user.getId());
+        List<Role> roles = loadRoles(user.getId());
         UserSession session = userSessionService.createSession(user, deviceInfo);
         String accessToken = jwtService.generateAccessToken(user, roles);
 
@@ -68,16 +69,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Optional<UserSession> optionalSession = userSessionService.findActiveByRefreshTokenHash(hash);
 
         if (optionalSession.isEmpty()) {
-            userSessionService.findByRefreshTokenHash(hash).ifPresent(session -> {
-                userSessionService.revokeAllByUser(session.getUser().getId());
-            });
+            userSessionService.findByPreviousTokenHash(hash).ifPresent(session ->
+                userSessionService.revokeAllByUser(
+                    session.getUser().getId(), RevokeReason.REUSE_DETECTED));
             throw new IllegalArgumentException("Invalid or revoked refresh token");
         }
 
         UserSession oldSession = optionalSession.get();
         User user = oldSession.getUser();
-        UserSession newSession = userSessionService.rotateSession(oldSession, deviceInfo);
-        List<String> roles = loadRoles(user.getId());
+        UserSession newSession = userSessionService.rotateSession(oldSession);
+        List<Role> roles = loadRoles(user.getId());
         String accessToken = jwtService.generateAccessToken(user, roles);
 
         return new TokenResponse(
@@ -94,19 +95,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public void logout(String refreshToken) {
         String hash = userSessionService.hashRefreshToken(refreshToken);
         userSessionService.findActiveByRefreshTokenHash(hash)
-            .ifPresent(userSessionService::revokeSession);
+            .ifPresent(session -> userSessionService.revokeSession(session, RevokeReason.LOGOUT));
     }
 
     @Override
     @Transactional
     public void logoutAll(String userId) {
-        userSessionService.revokeAllByUser(userId);
+        userSessionService.revokeAllByUser(userId, RevokeReason.LOGOUT_ALL);
     }
 
-    private List<String> loadRoles(String userId) {
+    private List<Role> loadRoles(String userId) {
         return userRoleRepository.findByUserId(userId).stream()
             .map(UserRole::getRole)
-            .map(Role::getName)
             .toList();
     }
 }

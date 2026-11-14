@@ -1,11 +1,12 @@
 package com.example.experience.application.user.service;
 
 import com.example.experience.application.user.dto.*;
+import com.example.experience.domain.rbac.Role;
 
 import java.util.List;
 
 public interface UserService {
-    UserResponse createUser(String username, String email, String rawPassword, String roleName);
+    UserResponse createUser(String username, String rawPassword, Role role);
 
     UserProfileResponse getUserProfile(String userId);
 

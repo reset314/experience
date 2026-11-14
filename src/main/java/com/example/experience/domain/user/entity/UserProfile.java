@@ -33,8 +33,8 @@ public class UserProfile {
     @Column(name = "settings", columnDefinition = "JSONB", nullable = true)
     private String settings;
 
-    @Column(name = "avatar_data", columnDefinition = "TEXT", nullable = true)
-    private String avatarData;
+    @Column(name = "avatar_uri", columnDefinition = "TEXT", nullable = true)
+    private String avatarUri;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

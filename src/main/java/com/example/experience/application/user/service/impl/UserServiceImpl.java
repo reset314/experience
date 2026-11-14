@@ -4,9 +4,10 @@ import com.example.experience.application.user.dto.*;
 import com.example.experience.application.user.service.UserService;
 import com.example.experience.common.exception.AccessDeniedException;
 import com.example.experience.common.utils.Uuid7Utils;
+import com.example.experience.domain.rbac.Role;
 import com.example.experience.domain.rbac.entity.UserRole;
-import com.example.experience.domain.rbac.repository.RoleRepository;
 import com.example.experience.domain.rbac.repository.UserRoleRepository;
+import com.example.experience.domain.user.entity.RevokeReason;
 import com.example.experience.domain.user.entity.User;
 import com.example.experience.domain.user.entity.UserProfile;
 import com.example.experience.domain.user.entity.UserSession;
@@ -27,16 +28,15 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
-    private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserSessionRepository userSessionRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
-    public UserResponse createUser(String username, String email, String rawPassword, String roleName) {
+    public UserResponse createUser(String username, String rawPassword, Role role) {
         String userId = Uuid7Utils.generateUuid7();
-        User user = User.create(userId, username, email, passwordEncoder.encode(rawPassword));
+        User user = User.create(userId, username, passwordEncoder.encode(rawPassword));
         User saved = userRepository.save(user);
 
         String profileId = Uuid7Utils.generateUuid7();
@@ -47,12 +47,9 @@ public class UserServiceImpl implements UserService {
             .build();
         userProfileRepository.save(profile);
 
-        roleRepository.findByName(roleName).ifPresent(role -> {
-            UserRole userRole = UserRole.create(Uuid7Utils.generateUuid7(), saved, role);
-            userRoleRepository.save(userRole);
-        });
+        userRoleRepository.save(UserRole.create(saved, role));
 
-        return new UserResponse(saved.getId(), saved.getUsername(), roleName);
+        return new UserResponse(saved.getId(), saved.getUsername(), List.of(role.getCode()));
     }
 
     @Override 
@@ -64,7 +61,7 @@ public class UserServiceImpl implements UserService {
         return new UserProfileResponse(
             userId,
             profile.getDisplayName(),
-            profile.getAvatarData()
+            profile.getAvatarUri()
         );
     }
 
@@ -88,9 +85,9 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User profile not found"));
         userProfile.setDisplayName(request.displayName());
         userProfile.setSettings(request.settings().toString());
-        userProfile.setAvatarData(request.avatarUri());
+        userProfile.setAvatarUri(request.avatarUri());
         userProfileRepository.save(userProfile);
-        return new UserProfileResponse(userProfile.getId(), userProfile.getDisplayName(), userProfile.getAvatarData());
+        return new UserProfileResponse(userProfile.getId(), userProfile.getDisplayName(), userProfile.getAvatarUri());
     }
 
     @Transactional
@@ -101,7 +98,7 @@ public class UserServiceImpl implements UserService {
         if (!userSession.getUser().getId().equals(userId))
             throw new AccessDeniedException("No access to session");
         else if (userSession.isActive())
-            userSession.revoke();
+            userSession.revoke(RevokeReason.LOGOUT);
     }
 
     @Transactional
@@ -110,7 +107,7 @@ public class UserServiceImpl implements UserService {
         List<UserSession> userSessions = userSessionRepository.findByUserId(userId);
         for (UserSession userSession : userSessions) {
             if (userSession.isActive())
-                userSession.revoke();
+                userSession.revoke(RevokeReason.LOGOUT_ALL);
         }
     }
 

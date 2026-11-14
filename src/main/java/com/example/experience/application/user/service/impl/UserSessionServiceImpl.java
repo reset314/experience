@@ -1,5 +1,17 @@
 package com.example.experience.application.user.service.impl;
 
+import com.example.experience.application.user.dto.DeviceInfo;
+import com.example.experience.application.user.service.UserSessionService;
+import com.example.experience.common.utils.Uuid7Utils;
+import com.example.experience.domain.user.entity.RevokeReason;
+import com.example.experience.domain.user.entity.User;
+import com.example.experience.domain.user.entity.UserSession;
+import com.example.experience.domain.user.repository.UserSessionRepository;
+import com.example.experience.infrastructure.config.AuthProperties;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -7,19 +19,6 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.example.experience.application.user.dto.DeviceInfo;
-import com.example.experience.application.user.service.UserSessionService;
-import com.example.experience.common.utils.Uuid7Utils;
-import com.example.experience.domain.user.entity.User;
-import com.example.experience.domain.user.entity.UserSession;
-import com.example.experience.domain.user.repository.UserSessionRepository;
-import com.example.experience.infrastructure.config.AuthProperties;
-
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -67,37 +66,45 @@ public class UserSessionServiceImpl implements UserSessionService {
     }
 
     @Override
-    @Transactional
-    public UserSession rotateSession(UserSession oldSession, DeviceInfo deviceInfo) {
-        oldSession.revoke();
-        userSessionRepository.save(oldSession);
-        return createSession(oldSession.getUser(), deviceInfo);
+    @Transactional(readOnly = true)
+    public Optional<UserSession> findByPreviousTokenHash(String previousTokenHash) {
+        return userSessionRepository.findByPreviousTokenHash(previousTokenHash);
     }
 
     @Override
     @Transactional
-    public void revokeSession(UserSession session) {
-        session.revoke();
+    public UserSession rotateSession(UserSession session) {
+        String plainRefreshToken = generateRefreshToken();
+        Instant expiresAt = Instant.now().plus(authProperties.refreshTokenExpiration());
+        session.rotate(hashRefreshToken(plainRefreshToken), expiresAt);
+        session.setPlainRefreshToken(plainRefreshToken);
+        return userSessionRepository.save(session);
+    }
+
+    @Override
+    @Transactional
+    public void revokeSession(UserSession session, RevokeReason reason) {
+        session.revoke(reason);
         userSessionRepository.save(session);
     }
 
     @Override
     @Transactional
-    public void revokeAllByUser(String userId) {
+    public void revokeAllByUser(String userId, RevokeReason reason) {
         userSessionRepository.findByUserIdAndStatus(userId, "active")
             .forEach(session -> {
-                session.revoke();
+                session.revoke(reason);
                 userSessionRepository.save(session);
             });
     }
 
     @Override
     @Transactional
-    public void revokeAllByUserExcept(String userId, String exceptSessionId) {
+    public void revokeAllByUserExcept(String userId, String exceptSessionId, RevokeReason reason) {
         userSessionRepository.findByUserIdAndStatus(userId, "active").stream()
             .filter(session -> exceptSessionId == null || !session.getId().equals(exceptSessionId))
             .forEach(session -> {
-                session.revoke();
+                session.revoke(reason);
                 userSessionRepository.save(session);
             });
     }

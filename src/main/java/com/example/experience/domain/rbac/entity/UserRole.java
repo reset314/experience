@@ -1,43 +1,42 @@
 package com.example.experience.domain.rbac.entity;
 
+import com.example.experience.domain.rbac.Role;
 import com.example.experience.domain.user.entity.User;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.Instant;
 
 @Entity
-@Table(name = "user_roles", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"user_id", "role_id"})
-})
+@Table(name = "user_roles")
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class UserRole {
 
-    @Id
-    @Column(length = 32, nullable = false, updatable = false)
-    private String id;
+    @EmbeddedId
+    private UserRoleId id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @MapsId("userId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", length = 32, nullable = false, updatable = false)
     private Role role;
 
-    public static UserRole create(String id, User user, Role role) {
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
+
+    public static UserRole create(User user, Role role) {
         UserRole userRole = new UserRole();
-        userRole.id = id;
+        userRole.id = new UserRoleId(user.getId(), role.name());
         userRole.user = user;
         userRole.role = role;
         return userRole;

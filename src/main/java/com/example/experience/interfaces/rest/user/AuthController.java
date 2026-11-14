@@ -1,24 +1,14 @@
 package com.example.experience.interfaces.rest.user;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.experience.application.user.dto.DeviceInfo;
-import com.example.experience.application.user.dto.LoginRequest;
-import com.example.experience.application.user.dto.RefreshRequest;
-import com.example.experience.application.user.dto.RegisterRequest;
-import com.example.experience.application.user.dto.TokenResponse;
-import com.example.experience.application.user.dto.UserResponse;
+import com.example.experience.application.user.dto.*;
 import com.example.experience.application.user.service.AuthenticationService;
 import com.example.experience.application.user.service.UserService;
-
+import com.example.experience.domain.rbac.Role;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -32,9 +22,8 @@ public class AuthController {
     public ResponseEntity<UserResponse> register(@RequestBody RegisterRequest request) {
         UserResponse response = userService.createUser(
             request.username(),
-            request.email(),
             request.password(),
-            "user"
+            Role.USER
         );
         return ResponseEntity.ok(response);
     }
