@@ -1,23 +1,14 @@
 package com.example.experience.domain.sync.entity;
 
-import java.time.Instant;
-
+import com.example.experience.domain.platform.entity.Platform;
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.Instant;
 
 @Entity
 @Table(name = "sync_adapters")
@@ -36,6 +27,10 @@ public class SyncAdapter {
     //适配器标识=适配器类名
     @Column(name = "adapter_key", length = 128, nullable = false, unique = true)
     private String adapterKey;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "platform_id", nullable = false)
+    private Platform platform;
 
     @Column(name = "class_name", length = 255, nullable = true)
     private String className;
@@ -61,6 +56,7 @@ public class SyncAdapter {
     @Column(name = "version", length = 16, nullable = true)
     private String version;
 
+    // builtin/uploaded
     @Column(name = "adapter_type", length = 16, nullable = false)
     @Builder.Default
     private String adapterType = "uploaded";
