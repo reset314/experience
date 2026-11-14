@@ -52,9 +52,6 @@ public class UserCredential {
     @Column(name = "last_used_at", nullable = true)
     private Instant lastUsedAt;
 
-    @Column(name = "auth_context", columnDefinition = "JSONB", nullable = true)
-    private String authContext;
-
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
