@@ -1,28 +1,15 @@
 package com.example.experience.domain.media.entity;
 
-import java.time.Instant;
-
+import com.example.experience.domain.datasource.entity.UserDataSource;
+import com.example.experience.domain.user.entity.User;
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.example.experience.domain.datasource.entity.UserDataSource;
-import com.example.experience.domain.user.entity.User;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.Instant;
 
 @Entity
 @Table(name = "media_files")
@@ -38,22 +25,19 @@ public class MediaFile {
     @Column(length = 32, nullable = false, updatable = false)
     private String id;
 
-    @CreatedBy
-    @Column(name = "created_by", length = 64, nullable = false)
-    private String createdBy;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "data_source_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "data_source_id")
     private UserDataSource dataSource;
 
-    @Column(name = "original_name", length = 255, nullable = true)
+    //文件名
+    @Column(name = "original_name")
     private String originalName;
 
-    @Column(name = "mime_type", length = 128, nullable = true)
+    @Column(name = "mime_type", length = 128)
     private String mimeType;
 
     @Column(name = "size_bytes", nullable = false)
@@ -80,4 +64,8 @@ public class MediaFile {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @CreatedBy
+    @Column(name = "created_by", length = 64, nullable = false)
+    private String createdBy;
 }

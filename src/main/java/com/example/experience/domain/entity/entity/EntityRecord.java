@@ -56,6 +56,7 @@ public class EntityRecord {
     @Column(name = "metadata", columnDefinition = "JSONB", nullable = true)
     private String metadata;
 
+    @Version
     @Column(name = "version")
     private Integer version;
 

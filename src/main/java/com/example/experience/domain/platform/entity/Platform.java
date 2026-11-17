@@ -1,28 +1,13 @@
 package com.example.experience.domain.platform.entity;
 
-import java.time.Instant;
-
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.example.experience.domain.sync.entity.SyncAdapter;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.Instant;
 
 @Entity
 @Table(name = "platforms", uniqueConstraints = {
@@ -41,18 +26,14 @@ public class Platform {
     @Column(length = 32, nullable = false, updatable = false)
     private String id;
 
-    @Column(name = "name", length = 64, nullable = false)
+    @Column(name = "name", length = 64, nullable = false, unique = true)
     private String name;
 
     @Column(name = "display_name", length = 128, nullable = false)
     private String displayName;
 
-    @Column(name = "description", columnDefinition = "TEXT", nullable = true)
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
-
-    @ManyToOne
-    @JoinColumn(name = "adapter_id", nullable = true)
-    private SyncAdapter adapter;
 
     @CreatedBy
     @Column(name = "created_by", length = 64, nullable = false)
@@ -62,6 +43,7 @@ public class Platform {
     @Builder.Default
     private String visibility = "private";
 
+    //uri
     @Column(name = "icon", length = 255, nullable = true) 
     private String icon;
 
